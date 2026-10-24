@@ -1,0 +1,19 @@
+name: KQL checks
+on:
+  pull_request:
+    branches: [main]
+permissions:
+  contents: read                # least privilege: bu job sadece okur
+jobs:
+  version-line:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Every .kql file has a "// version:" line
+        run: |
+          missing=$(find . -name '*.kql' -not -path './.git/*' -exec grep -L '^// version:' {} +)
+          if [ -n "$missing" ]; then
+            echo "Missing '// version:' line in:"
+            echo "$missing"
+            exit 1
+          fi
